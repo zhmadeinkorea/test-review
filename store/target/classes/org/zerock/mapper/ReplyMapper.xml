@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.ReplyMapper">
+
+	<select id="getListReply" resultType="org.zerock.domain.ReplyDTO">
+		<![CDATA[
+			select * from tbl_reply where rno>0 order by rno desc
+		]]>
+	</select>
+
+	<insert id="insertReply">
+		<selectKey keyProperty="rno" order="BEFORE"
+			resultType="int">
+			select seq_reply.nextval from dual
+		</selectKey>
+		insert into tbl_reply(rno, reply)
+		values(#{rno}, #{reply})
+	</insert>
+	
+</mapper>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.zerock.mapper.StoreMapper">
+
+	<select id="getListStore" resultType="org.zerock.domain.StoreDTO">
+		<![CDATA[
+			select * from tbl_store where sno>0
+		]]>
+	</select>
+	
+	<select id="getCategory" resultType="org.zerock.domain.StoreDTO">
+		<![CDATA[
+			select distinct category from tbl_store order by category desc
+		]]>
+	</select>
+	
+	<select id="getListCa" resultType="org.zerock.domain.StoreDTO">
+		<![CDATA[
+			select * from tbl_store where category=#{category}
+		]]>
+	</select>
+	
+
+	<insert id="insertReview">
+		<selectKey keyProperty="sno" order="BEFORE"
+			resultType="int">
+			select seq_board.nextval from dual
+		</selectKey>
+		insert into tbl_store(sno, category, title, content, rating, password)
+		values(#{sno}, #{category}, #{title}, #{content}, #{rating}, #{password})
+	</insert>
+	
+	<delete id="deleteReview">
+		delete from tbl_store where sno=#{sno}
+	</delete>
+	
+	<update id="updateReview">
+		update tbl_store
+		set category=#{category},
+		title =#{title},
+		content=#{content},
+		rating=#{rating}
+		where sno=#{sno}
+	</update>
+	
+	<select id="read" resultType="org.zerock.domain.StoreDTO">
+		select * from tbl_store where sno=#{sno}
+	</select>
+	
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+			<foreach item='type' collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							title like '%'||#{keyword}||'%'
+						</when>
+						<when test="type == 'C'.toString()">
+							content like '%'||#{keyword}||'%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>
+	</sql>
+	
+		<sql id="criteriaCategory">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+			<foreach item='type' collection="cri.typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							title like '%'||#{cri.keyword}||'%' AND
+							category like #{category}
+						</when>
+						<when test="type == 'C'.toString()">
+							content like '%'||#{cri.keyword}||'%' AND
+							category like #{category}
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim>
+	</sql>
+	
+	
+	<select id="getListWithPaging" resultType="org.zerock.domain.StoreDTO">
+		<![CDATA[
+			select 
+			sno, category, title, content, rating, regdate
+			from(
+				select /*+INDEX_DESC(tbl_store pk_board) */
+				rownum rn, sno, category, title, content, rating, regdate
+				from tbl_store
+				where
+		]]>
+		<include refid="criteria"></include>
+		<![CDATA[
+			rownum<=#{pageNum} * #{amount})
+			where rn > (#{pageNum}-1) * #{amount}
+		]]>
+	</select>
+	
+   <select id="getListWithPagingCategory" parameterType="map" resultType="org.zerock.domain.StoreDTO">
+		<![CDATA[
+			select 
+			sno, category, title, content, rating, regdate
+			from(
+				select /*+INDEX_DESC(tbl_store pk_board) */
+				rownum rn, sno, category, title, content, rating, regdate
+				from tbl_store 
+				where category = #{category} AND
+		]]>
+		<include refid="criteriaCategory"></include>
+		<![CDATA[
+			rownum<=#{cri.pageNum} * #{cri.amount})
+			where
+			rn > (#{cri.pageNum}-1) * #{cri.amount}
+		]]>
+   </select>
+	
+	<select id="getTotalCount" resultType="int">
+		select count(*) from tbl_store where <include refid="criteria"></include>
+		sno>0
+	</select>
+	
+	<select id="getTotalCountCategory" parameterType="map" resultType="int">
+		select count(*) from tbl_store where category=#{category} AND <include refid="criteriaCategory"></include> sno>0
+	</select>
+	
+	
+		<select id="getListRatingDesc" resultType="org.zerock.domain.StoreDTO">
+		<![CDATA[
+			select 
+			sno, category, title, content, rating, regdate
+			from(
+				select  /*+INDEX_ASC(tbl_store ra_index) */
+				rownum rn, sno, category, title, content, rating, regdate
+				from tbl_store
+				where
+		]]>
+		<include refid="criteria"></include>
+		<![CDATA[
+			rownum<=#{pageNum} * #{amount}
+			)
+			where rn > (#{pageNum}-1) * #{amount}
+		]]>
+	</select>
+	
+   <select id="getListRatingDescCategory" parameterType="map" resultType="org.zerock.domain.StoreDTO">
+		<![CDATA[
+			select 
+			sno, category, title, content, rating, regdate
+			from(
+				select /*+INDEX_DESC(tbl_store rating_index) */
+				rownum rn, sno, category, title, content, rating, regdate
+				from tbl_store 
+				where category = #{category} AND
+		]]>
+		<include refid="criteriaCategory"></include>
+		<![CDATA[
+			rownum<=#{cri.pageNum} * #{cri.amount})
+			where
+			rn > (#{cri.pageNum}-1) * #{cri.amount}
+		]]>
+   </select>
+
+</mapper>

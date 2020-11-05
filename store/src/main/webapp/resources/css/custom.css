@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR&display=swap');
+*{
+font-family: 'Noto Sans KR', sans-serif;
+}
+
+a{
+	text-decoration:none;
+	color:black;
+}
+
+#head{
+	background-color:#DCCFF2;
+	padding:50px;
+	text-align:center;
+	font-size:40px;
+	color:white;
+	font-family: 'Jua';
+}
+
+#article{
+	padding:50px;
+	text-align:left;
+	margin:100px;
+	color:black;
+}
+
+#menu{
+	font-size:20px;
+	text-align:left;
+	margin-bottom:20px;
+	
+}
+
+#menu_2{
+	text_align:center;
+	color:white;
+	font-size:25px;
+	
+	
+}
+#main_article {
+	padding: 30px;
+	font-size: 20px;
+	  background-color: rgba( 221,207,242, 0.3);
+}
+
